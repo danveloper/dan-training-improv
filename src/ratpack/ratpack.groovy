@@ -5,12 +5,14 @@ import g3summit.DefaultBookService
 
 import static ratpack.groovy.Groovy.ratpack
 import ratpack.registry.Registry
+import ratpack.handlebars.HandlebarsModule
 
 ratpack {
 
   bindings {
     bind(BookService, DefaultBookService)
     bindInstance(new BookRenderer())
+    module(HandlebarsModule)
   }
 
   handlers {
