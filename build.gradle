@@ -1,0 +1,15 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'io.ratpack:ratpack-gradle:1.4.4'
+  }
+}
+
+apply plugin: 'io.ratpack.ratpack-groovy'
+apply plugin: 'idea'
+
+repositories {
+  jcenter()
+}
