@@ -16,4 +16,6 @@ repositories {
 
 dependencies {
   compile ratpack.dependency("handlebars")
+  compile ratpack.dependency("h2")
+  compile ratpack.dependency("hikari")
 }
