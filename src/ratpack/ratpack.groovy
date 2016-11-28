@@ -12,10 +12,14 @@ import ratpack.h2.H2Module
 import ratpack.hikari.HikariModule
 import ratpack.groovy.sql.SqlModule
 
+import static ratpack.jackson.Jackson.json
+
 ratpack {
 
   bindings {
-    bind(BookService, DefaultBookService)
+    binder { b ->
+      b.bind(BookService).to(DefaultBookService).asEagerSingleton()
+    }
     bindInstance(new BookRenderer())
     module(HandlebarsModule)
     module SqlModule
@@ -32,8 +36,9 @@ ratpack {
       prefix(":isbn") {
         all { BookService bookService ->
           def isbn = allPathTokens.isbn
-          def book = bookService.getBook(isbn)
-          next(Registry.single(book))
+          bookService.getBook(isbn).then { book ->
+            next(Registry.single(book))
+          }
         }
 
         all { Book book ->
@@ -55,10 +60,16 @@ ratpack {
       all { BookService bookService ->
         byMethod {
           get {
-            // TODO: render list of books as JSON
+            bookService.list().then { books ->
+              render json(books)
+            }
           }
           post {
-            // TODO: create a book and return 201
+            parse(Book).flatMap { book ->
+              bookService.save(book).promise()
+            }.then {
+              response.status(201).send()
+            }
           }
         }
       }

@@ -1,5 +1,6 @@
 package g3summit
 
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import ratpack.exec.Blocking
 import ratpack.exec.Operation
@@ -18,28 +19,48 @@ class DefaultBookService implements BookService {
   }
 
   void createTables() {
-    Blocking.get {
-      sql.executeInsert("drop table if exists books")
-      sql.executeInsert("create table books (isbn varchar(13) primary key, quantity int, price numeric(15, 2), title varchar(50), author varchar(50), publisher varchar(50))")
-    }.operation().then()
+    sql.executeInsert("drop table if exists books")
+    sql.executeInsert("create table books (isbn varchar(13) primary key, quantity int, price numeric(15, 2), title varchar(50), author varchar(50), publisher varchar(50))")
   }
 
   @Override
   Promise<List<Book>> list() {
-    // TODO: implement getting all books on a blocking thread
-    return null
+    Blocking.get {
+      sql.rows """
+        select * from books
+      """
+    }.map { rows ->
+      rows.collect(this.&mapFromRow)
+    }
+  }
+
+  private static Book mapFromRow(GroovyRowResult row) {
+    new Book(
+        row["ISBN"] as String,
+        row["QUANTITY"] as int,
+        row["PRICE"] as BigDecimal,
+        row["TITLE"] as String,
+        row["AUTHOR"] as String,
+        row["PUBLISHER"] as String
+    )
   }
 
   @Override
   Promise<Book> getBook(String isbn) {
-    // TODO: implement getting a single book on a blocking thread
-    return null
+    Blocking.get {
+      sql.firstRow """
+      select * from books where isbn = ${isbn}
+      """
+    }.map(this.&mapFromRow)
   }
 
   @Override
   Operation save(Book book) {
-    // TODO: implement saving a single book on a blocking thread
-    return null
+    Blocking.get {
+      sql.executeInsert """
+        insert into books values (${book.isbn}, ${book.quantity}, ${book.price}, ${book.title}, ${book.author}, ${book.publisher})
+      """
+    }.operation()
   }
 
   @Override
