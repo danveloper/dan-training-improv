@@ -3,10 +3,11 @@ package g3summit
 import ratpack.handling.Context
 import ratpack.render.RendererSupport
 
+import static ratpack.jackson.Jackson.json
+
 class BookRenderer extends RendererSupport<Book> {
   @Override
   void render(Context ctx, Book book) throws Exception {
-    // ProTip: look at ratpack.jackson.Jackson.json method
-    // TODO IMPLEMENT ME TO RENDER JSON
+    ctx.render(json(book))
   }
 }

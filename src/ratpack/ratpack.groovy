@@ -1,3 +1,5 @@
+import g3summit.Book
+import g3summit.BookRenderer
 import g3summit.BookService
 import g3summit.DefaultBookService
 
@@ -8,7 +10,7 @@ ratpack {
 
   bindings {
     bind(BookService, DefaultBookService)
-    // REGISTER A BOOK RENDERER
+    bindInstance(new BookRenderer())
   }
 
   handlers {
@@ -21,8 +23,8 @@ ratpack {
         next(Registry.single(book))
       }
 
-      get {
-        // TODO RENDER A BOOK
+      get { Book book ->
+        render book
       }
     }
   }
