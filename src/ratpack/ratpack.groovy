@@ -1,4 +1,3 @@
-import g3summit.Book
 import g3summit.BookService
 import g3summit.DefaultBookService
 
@@ -9,6 +8,7 @@ ratpack {
 
   bindings {
     bind(BookService, DefaultBookService)
+    // REGISTER A BOOK RENDERER
   }
 
   handlers {
@@ -21,12 +21,8 @@ ratpack {
         next(Registry.single(book))
       }
 
-      get("title") {
-        response.send(get(Book).title)
-      }
-
-      get("author") { Book book ->
-        response.send(book.author)
+      get {
+        // TODO RENDER A BOOK
       }
     }
   }
