@@ -28,9 +28,9 @@ ratpack {
 
   handlers {
 
-    prefix("book") { BookService bookService ->
+    prefix("book") {
       prefix(":isbn") {
-        all {
+        all { BookService bookService ->
           def isbn = allPathTokens.isbn
           def book = bookService.getBook(isbn)
           next(Registry.single(book))
@@ -52,7 +52,7 @@ ratpack {
         }
       }
 
-      all {
+      all { BookService bookService ->
         byMethod {
           get {
             // TODO: render list of books as JSON
